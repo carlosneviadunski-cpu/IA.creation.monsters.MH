@@ -1,3 +1,4 @@
+
 class CriadorDeMonstros:
     def __init__(self):
         # Base de conhecimento para validação do assunto
@@ -100,3 +101,4 @@ print("\n" + "="*40 + "\n")
 # 3. Pergunta fora do escopo de monstros
 print("Consulta 2:")
 print(ia.analisar_monstro("Qual é a capital da França?"))
+
