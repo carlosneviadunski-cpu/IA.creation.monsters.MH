@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Runner Python - Gerador de Monstros</title>
-    <!-- Importação do PyScript atualizado -->
+    <!-- Importação do PyScript -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
     <style>
@@ -27,11 +27,10 @@
             margin: 8px 0;
             border-radius: 4px;
             border: 1px solid #333;
-            background: #2a2a2a;
-            color: white;
         }
         button {
             background-color: #6200ee;
+            color: white;
             font-weight: bold;
             cursor: pointer;
         }
@@ -70,11 +69,11 @@
         <div id="output">O resultado da análise aparecerá aqui...</div>
     </div>
 
-    <!-- Código Python corrigido -->
+    <!-- Código Python executado pelo navegador -->
     <py-script>
         from js import document
 
-        def executar_gerador(event=None):
+        def executar_gerador(*args):
             nome = document.getElementById("nome").value
             estrutura = document.getElementById("estrutura").value
             poder = document.getElementById("poder").value
@@ -87,13 +86,11 @@
             }
             dieta = dietas.get(ambiente, "Adaptável ao ecossistema.")
 
-            resultado = (
-                f"🧬 ANÁLISE BIOLÓGICA DE {nome.upper()}\n\n"
-                f"• Dieta: {dieta}\n"
-                f"• Estrutura: {estrutura}\n"
-                f"• Habilidade: {poder}\n"
-                f"• Habitat: {ambiente}"
-            )
+            resultado = f"🧬 ANÁLISE BIOLÓGICA DE {nome.upper()}\n\n" \
+                        f"• Dieta: {dieta}\n" \
+                        f"• Estrutura: {estrutura}\n" \
+                        f"• Habilidade: {poder}\n" \
+                        f"• Habitat: {ambiente}"
 
             document.getElementById("output").innerText = resultado
     </py-script>
