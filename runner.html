@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runner Python - Gerador de Monstros</title>
+    <!-- Importação do PyScript atualizado -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.05.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2023.05.1/pyscript.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: white;
+        }
+        button {
+            background-color: #6200ee;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 15px;
+            white-space: pre-line;
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>🐉 Criador de Monstros (Runner HTML)</h2>
+        
+        <label>Nome do Monstro:</label>
+        <input type="text" id="nome" value="Ignisdrake">
+
+        <label>Estrutura:</label>
+        <input type="text" id="estrutura" value="Quadrúpede escamado">
+
+        <label>Poder:</label>
+        <input type="text" id="poder" value="Sopro de Impacto">
+
+        <label>Ambiente:</label>
+        <select id="ambiente">
+            <option value="Vulcão">Vulcão</option>
+            <option value="Pico Gelado">Pico Gelado</option>
+            <option value="Pantano">Pântano</option>
+        </select>
+
+        <button py-click="executar_gerador">Analisar e Gerar</button>
+
+        <div id="output">O resultado da análise aparecerá aqui...</div>
+    </div>
+
+    <!-- Código Python corrigido -->
+    <py-script>
+        from js import document
+
+        def executar_gerador(event=None):
+            nome = document.getElementById("nome").value
+            estrutura = document.getElementById("estrutura").value
+            poder = document.getElementById("poder").value
+            ambiente = document.getElementById("ambiente").value
+
+            dietas = {
+                "Vulcão": "Carnívoro/Litófago (consome minérios e enxofre).",
+                "Pico Gelado": "Carnívoro (caçador com isolamento térmico).",
+                "Pantano": "Detritívoro/Tóxico (assimila venenos)."
+            }
+            dieta = dietas.get(ambiente, "Adaptável ao ecossistema.")
+
+            resultado = (
+                f"🧬 ANÁLISE BIOLÓGICA DE {nome.upper()}\n\n"
+                f"• Dieta: {dieta}\n"
+                f"• Estrutura: {estrutura}\n"
+                f"• Habilidade: {poder}\n"
+                f"• Habitat: {ambiente}"
+            )
+
+            document.getElementById("output").innerText = resultado
+    </py-script>
+
+</body>
+</html>
