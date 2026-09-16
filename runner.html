@@ -3,67 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Runner Python - Gerador de Monstros</title>
-    <!-- Imports do PyScript -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <title>Aether3D Studio - Runner</title>
+    <!-- Importação dos scripts oficiais do Gradio Lite -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d1b2a;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            background: linear-gradient(90deg, #38bdf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>🐉 Criador de Monstros (Runner HTML)</h2>
-        
-        <label for="nome">Nome do Monstro:</label>
-        <input type="text" id="nome" value="Ignisdrake">
+<div class="container">
+    <header>
+        <h1>Aether3D Studio Runner</h1>
+        <p>Ambiente de Execução Gradio via WebAssembly</p>
+    </header>
 
-        <label for="estrutura">Estrutura:</label>
-        <input type="text" id="estrutura" value="Quadrúpede escamado">
+    <!-- Componente Gradio Lite carregando o Python no navegador -->
+    <gradio-lite>
+        <gradio-requirements>
+            gradio
+            numpy
+        </gradio-requirements>
 
-        <label for="poder">Poder:</label>
-        <input type="text" id="poder" value="Sopro de Impacto">
+        <gradio-file name="app.py">
+import gradio as gr
+import time
+import os
+import tempfile
+import numpy as np
 
-        <label for="ambiente">Ambiente:</label>
-        <select id="ambiente">
-            <option value="Vulcão">Vulcão</option>
-            <option value="Pico Gelado">Pico Gelado</option>
-            <option value="Pantano">Pântano</option>
-        </select>
+# Mock procedural para compatibilidade no navegador
+def create_obj_cube():
+    return """v -0.5 -0.5 0.5
+v 0.5 -0.5 0.5
+v 0.5 0.5 0.5
+v -0.5 0.5 0.5
+v -0.5 -0.5 -0.5
+v 0.5 -0.5 -0.5
+v 0.5 0.5 -0.5
+v -0.5 0.5 -0.5
+f 1 2 3 4
+f 8 7 6 5
+f 4 3 7 8
+f 5 1 4 8
+f 5 6 2 1
+f 2 6 7 3"""
 
-        <button id="btn-gerar">Analisar e Gerar</button>
+def process_prompt(prompt, asset_type, output_format, resolution, color_mode):
+    if not prompt or not prompt.strip():
+        return "⚠️ Por favor, digite um prompt válido.", None, None
 
-        <div id="output">O resultado da análise aparecerá aqui...</div>
-    </div>
+    time.sleep(0.5)
+    temp_dir = tempfile.gettempdir()
+    
+    ext = output_format.split(" ")[0].lower().strip()
+    file_name = f"asset_gerado{ext}"
+    file_path = os.path.join(temp_dir, file_name)
 
-    <script type="py" config='{"interpreter": "pyodide"}'>
-        from pyscript import document
-        from pyodide.ffi import create_proxy
+    # Gera um modelo 3D genérico em OBJ
+    obj_data = create_obj_cube()
+    with open(file_path, "w") as f:
+        f.write(obj_data)
 
-        def executar_gerador(event=None):
-            nome = document.getElementById("nome").value
-            estrutura = document.getElementById("estrutura").value
-            poder = document.getElementById("poder").value
-            ambiente = document.getElementById("ambiente").value
+    status_msg = f"✨ Asset gerado com sucesso! | Prompt: '{prompt}' | Formato: {ext.upper()}"
+    return status_msg, file_path, file_path
 
-            dietas = {
-                "Vulcão": "Carnívoro/Litófago (consome minérios e enxofre).",
-                "Pico Gelado": "Carnívoro (caçador com isolamento térmico).",
-                "Pantano": "Detritívoro/Tóxico (assimila venenos)."
-            }
-            dieta = dietas.get(ambiente, "Adaptável ao ecossistema.")
+custom_css = """
+body, .gradio-container {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b1b3a 100%) !important;
+}
+.main-header h1 {
+    background: linear-gradient(90deg, #38bdf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+"""
 
-            resultado = (
-                f"🧬 ANÁLISE BIOLÓGICA DE {nome.upper()}\n\n"
-                f"• Dieta: {dieta}\n"
-                f"• Estrutura: {estrutura}\n"
-                f"• Habilidade: {poder}\n"
-                f"• Habitat: {ambiente}"
+with gr.Blocks(css=custom_css, title="Aether3D - IA de Modelagem 2D/3D") as app:
+    
+    with gr.Column():
+        gr.Markdown("# 🌀 Aether3D Studio")
+        gr.Markdown("### Sistema de Geração Procedimental de Assets 2D e 3D")
+
+    with gr.Row():
+        with gr.Column(scale=1):
+            gr.Markdown("#### 🎛️ Configurações do Prompt")
+            
+            user_prompt = gr.Textbox(
+                label="Prompt de Criação",
+                placeholder="Ex: 'Espada medieval', 'Escudo circular'...",
+                lines=3
             )
+            
+            asset_type = gr.Radio(
+                choices=[
+                    "Peça Industrial / Impressão 3D",
+                    "Entidade / Monstro / NPC (Jogo 3D)",
+                    "Cenário / Asset Ambiental (Jogo 3D)",
+                    "Sprite / Textura / UI (Jogo 2D)"
+                ],
+                value="Entidade / Monstro / NPC (Jogo 3D)",
+                label="Tipo de Asset"
+            )
+            
+            with gr.Accordion("⚙️ Parâmetros Técnicos Avançados", open=True):
+                output_format = gr.Dropdown(
+                    choices=[".OBJ (Jogos/3D)", ".STL (Impressão 3D)"],
+                    value=".OBJ (Jogos/3D)",
+                    label="Formato de Saída"
+                )
+                resolution = gr.Slider(
+                    minimum=128, maximum=2048, step=128, value=512, label="Resolução da Malha"
+                )
+                color_mode = gr.Checkbox(label="Incluir Texturas/Vértices Coloridos", value=True)
 
-            document.getElementById("output").innerText = resultado
+            generate_btn = gr.Button("🚀 Gerar Asset", variant="primary")
 
-        btn = document.getElementById("btn-gerar")
-        btn.addEventListener("click", create_proxy(executar_gerador))
-    </script>
+        with gr.Column(scale=1):
+            gr.Markdown("#### 🖼️ Resultado & Exportação")
+            
+            status_output = gr.Textbox(label="Status do Processamento", interactive=False)
+            model_preview = gr.Model3D(label="Visualizador 3D Interativo")
+            download_file = gr.File(label="Baixar Arquivo Final")
+
+    generate_btn.click(
+        fn=process_prompt,
+        inputs=[user_prompt, asset_type, output_format, resolution, color_mode],
+        outputs=[status_output, model_preview, download_file]
+    )
+
+app.launch()
+        </gradio-file>
+    </gradio-lite>
+</div>
 
 </body>
 </html>
