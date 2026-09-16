@@ -40,122 +40,19 @@
         <p>Ambiente de Execução Gradio via WebAssembly</p>
     </header>
 
-    <!-- Componente Gradio Lite carregando o Python no navegador -->
+    <!-- Componente Gradio Lite -->
     <gradio-lite>
+        <!-- Pacotes Pyodide/WebAssembly baseados no seu requirements.txt -->
         <gradio-requirements>
             gradio
+            trimesh
             numpy
+            Pillow
+            scipy
         </gradio-requirements>
 
-        <gradio-file name="app.py">
-import gradio as gr
-import time
-import os
-import tempfile
-import numpy as np
-
-# Mock procedural para compatibilidade no navegador
-def create_obj_cube():
-    return """v -0.5 -0.5 0.5
-v 0.5 -0.5 0.5
-v 0.5 0.5 0.5
-v -0.5 0.5 0.5
-v -0.5 -0.5 -0.5
-v 0.5 -0.5 -0.5
-v 0.5 0.5 -0.5
-v -0.5 0.5 -0.5
-f 1 2 3 4
-f 8 7 6 5
-f 4 3 7 8
-f 5 1 4 8
-f 5 6 2 1
-f 2 6 7 3"""
-
-def process_prompt(prompt, asset_type, output_format, resolution, color_mode):
-    if not prompt or not prompt.strip():
-        return "⚠️ Por favor, digite um prompt válido.", None, None
-
-    time.sleep(0.5)
-    temp_dir = tempfile.gettempdir()
-    
-    ext = output_format.split(" ")[0].lower().strip()
-    file_name = f"asset_gerado{ext}"
-    file_path = os.path.join(temp_dir, file_name)
-
-    # Gera um modelo 3D genérico em OBJ
-    obj_data = create_obj_cube()
-    with open(file_path, "w") as f:
-        f.write(obj_data)
-
-    status_msg = f"✨ Asset gerado com sucesso! | Prompt: '{prompt}' | Formato: {ext.upper()}"
-    return status_msg, file_path, file_path
-
-custom_css = """
-body, .gradio-container {
-    background: linear-gradient(135deg, #0d1b2a 0%, #1b1b3a 100%) !important;
-}
-.main-header h1 {
-    background: linear-gradient(90deg, #38bdf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-"""
-
-with gr.Blocks(css=custom_css, title="Aether3D - IA de Modelagem 2D/3D") as app:
-    
-    with gr.Column():
-        gr.Markdown("# 🌀 Aether3D Studio")
-        gr.Markdown("### Sistema de Geração Procedimental de Assets 2D e 3D")
-
-    with gr.Row():
-        with gr.Column(scale=1):
-            gr.Markdown("#### 🎛️ Configurações do Prompt")
-            
-            user_prompt = gr.Textbox(
-                label="Prompt de Criação",
-                placeholder="Ex: 'Espada medieval', 'Escudo circular'...",
-                lines=3
-            )
-            
-            asset_type = gr.Radio(
-                choices=[
-                    "Peça Industrial / Impressão 3D",
-                    "Entidade / Monstro / NPC (Jogo 3D)",
-                    "Cenário / Asset Ambiental (Jogo 3D)",
-                    "Sprite / Textura / UI (Jogo 2D)"
-                ],
-                value="Entidade / Monstro / NPC (Jogo 3D)",
-                label="Tipo de Asset"
-            )
-            
-            with gr.Accordion("⚙️ Parâmetros Técnicos Avançados", open=True):
-                output_format = gr.Dropdown(
-                    choices=[".OBJ (Jogos/3D)", ".STL (Impressão 3D)"],
-                    value=".OBJ (Jogos/3D)",
-                    label="Formato de Saída"
-                )
-                resolution = gr.Slider(
-                    minimum=128, maximum=2048, step=128, value=512, label="Resolução da Malha"
-                )
-                color_mode = gr.Checkbox(label="Incluir Texturas/Vértices Coloridos", value=True)
-
-            generate_btn = gr.Button("🚀 Gerar Asset", variant="primary")
-
-        with gr.Column(scale=1):
-            gr.Markdown("#### 🖼️ Resultado & Exportação")
-            
-            status_output = gr.Textbox(label="Status do Processamento", interactive=False)
-            model_preview = gr.Model3D(label="Visualizador 3D Interativo")
-            download_file = gr.File(label="Baixar Arquivo Final")
-
-    generate_btn.click(
-        fn=process_prompt,
-        inputs=[user_prompt, asset_type, output_format, resolution, color_mode],
-        outputs=[status_output, model_preview, download_file]
-    )
-
-app.launch()
-        </gradio-file>
+        <!-- Carrega o script principal diretamente -->
+        <gradio-file name="app_gui.py" entrypoint url="./app_gui.py"></gradio-file>
     </gradio-lite>
 </div>
 
