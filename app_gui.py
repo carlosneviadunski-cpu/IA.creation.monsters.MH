@@ -1,4 +1,21 @@
-import gradio as gr
+import sys
+import subprocess
+
+try:
+    # Tenta importar o Gradio padrão
+    import gradio as gr
+    print("Gradio tradicional carregado com sucesso!")
+
+except ImportError:
+    print("Gradio não encontrado. Configurando / importando alternativa...")
+    
+    # Exemplo 1: Tentar instalar automaticamente o gradio via pip no ambiente Python
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "gradio"])
+        import gradio as gr
+        print("Gradio instalado e carregado com sucesso!")
+    except Exception as e:
+        print(f"Não foi possível instalar o Gradio automaticamente: {e}")
 import time
 import os
 import tempfile
